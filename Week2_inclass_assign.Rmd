@@ -1,7 +1,7 @@
 ---
 title: "InClassAssign2"
-name:
-date:
+name: Elvira Kalmurzaeva
+date:August 28, 2020
 output: html_document
 ---
 Surveys are frequently used to measure political behavior such as voter turnout,
@@ -18,7 +18,11 @@ variables in the turnout.csv data file.
 summary of the data. How many observations are there? What is the range of
 years covered in this data set?
 ```{r}
-
+turnout <- read.csv("turnout.csv")
+class(turnout)
+dim (turnout) #There are 14 observations and nine variables in total.
+summary(turnout)
+#The range of years of elections covered in this data set are from 1980 to 2008, the difference is by 2 years.
 ```
 
 2. Calculate the turnout rate based on the voting age population or VAP. Note that
@@ -27,7 +31,10 @@ the VAP variable does not include these individuals in the count. Next, calculat
 the turnout rate using the voting eligible population or VEP. What difference do
 you observe?
 ```{r}
-
+VAPtr <-turnout$total/ (turnout$VAP + turnout$overseas)*100
+names(VAPtr) <-turnout$year
+VEPtr <-turnout$total/ turnout$VEP *100
+#The difference shows that the VEP-based turnout is higher than VAP-based turnout for all indicated years.  
 ```
 
 3. Compute the differences between the VAP and ANES estimates of turnout rate.
@@ -35,7 +42,11 @@ How big is the difference on average? What is the range of the differences?
 Conduct the same comparison for the VEP and ANES estimates of voter turnout.
 Briefly comment on the results.
 ```{r}
-
+diffVAP <-turnout$ANES - VAPtr
+summary(diffVAP) 
+#The ANES is higher on average than VAP by 20.33.The range of differences is from 11.06 to 26.17.
+diffVEP <- turnout$ANES - VEPtr
+summary(diffVEP) #The ANES is higher than VEP on average by 16.836. The range of difference is from 8.581 (minimum) to 22.489 (maximum)
 ```
 
 4. Compare the VEP turnout rate with the ANES turnout rate separately for
@@ -44,7 +55,22 @@ periods. Calculate the difference between the VEP turnout rate and the ANES
 turnout rate separately for each year within each period. Has the bias of ANES
 increased over time?
 ```{r}
-
+n.obs <- nrow(turnout)
+pres <- c(seq(from =1, to = n.obs, by = 2), n.obs)
+pVEPtr <-VEPtr[pres]
+pANEStr <- turnout[pres, "ANES"]
+diffpres <- pANEStr - pVEPtr
+summary(diffpres) #The difference between ANES and VEP during the presidential elections  is higher by 17.89 on average.
+mid <- c(seq(from =2, to = n.obs, by = 2), n.obs)
+mVEPtr <-VEPtr[mid]
+mANEStr <- turnout[mid, "ANES"]
+diffmid <- mANEStr - mVEPtr
+summary(diffmid)
+#The difference between ANES and VEP during the midterm elections  is higher by 15.683 on average.
+diffbefore = turnout[1:7,"ANES"] -VEPtr[1:7]
+diffafter = turnout[8:14,"ANES"] -VEPtr[8:14]
+mean(diffbefore)-mean(diffafter)
+#Overtime the difference of turnout has increased by about 2%
 ```
 
 6. ANES does not interview prisoners and overseas voters. Calculate an adjustment
@@ -55,6 +81,9 @@ overseas ballots counted from the total ballots in 2008. Compare the adjusted
 VAP turnout with the unadjusted VAP, VEP, and the ANES turnout rate. Briefly
 discuss the results.
 ```{r}
-
+VAPtradj<-(turnout$total - turnout$overseas)/ (turnout$VAP + turnout$overseas -turnout$felons - turnout$noncit)*100
+turnout2008 <- data.frame(VAPtradj,VAPtr, VEPtr,turnout$ANES)
+turnout2008<- turnout2008[14,]
+turnout2008
 ```
-
+#In 2008 ANES shows the highest turnout - 78%, which is higher than VEP turnout (the second highest turnout) for 16%. While VAP turnout shows 55.67%, which is minimum of all. Moreover, the adjusted VAP (excluding non-citizens, felons and people in overseas) shows 59.23%. 
