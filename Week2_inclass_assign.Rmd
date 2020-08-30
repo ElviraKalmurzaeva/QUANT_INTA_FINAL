@@ -18,6 +18,7 @@ variables in the turnout.csv data file.
 summary of the data. How many observations are there? What is the range of
 years covered in this data set?
 ```{r}
+setwd("/Users/elvirakalmurzaeva/Documents/Github/QUANT_INTA_FINAL")
 turnout <- read.csv("turnout.csv")
 class(turnout)
 dim (turnout) #There are 14 observations and nine variables in total.
