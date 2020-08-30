@@ -1,7 +1,7 @@
 ---
 title: "InClassAssign2"
 name: Elvira Kalmurzaeva
-date:August 28, 2020
+date: August 28, 2020
 output: html_document
 ---
 Surveys are frequently used to measure political behavior such as voter turnout,
@@ -86,4 +86,4 @@ turnout2008 <- data.frame(VAPtradj,VAPtr, VEPtr,turnout$ANES)
 turnout2008<- turnout2008[14,]
 turnout2008
 ```
-#In 2008 ANES shows the highest turnout - 78%, which is higher than VEP turnout (the second highest turnout) for 16%. While VAP turnout shows 55.67%, which is minimum of all. Moreover, the adjusted VAP (excluding non-citizens, felons and people in overseas) shows 59.23%. 
+#In 2008 ANES shows the highest turnout - 78%, which is higher than VEP turnout (the second highest turnout) for 16%. While VAP turnout shows 55.67%, which is minimum of all. Moreover, the adjusted VAP (excluding non-citizens, felons and people in overseas) shows 59.23%. These results show that ANES might probably skewed, since there is a great difference between other tunout results. It opens up an issue of whether or not ANES results represent the real situation and also proves an assumption of social desirability bias of respondents. This said, there is a need for cross checking the results of VAP, VEP and ANES turnouts. 
