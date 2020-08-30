@@ -10,6 +10,7 @@
 
 
 
+<meta name="date" content="2020-08-28" />
 
 <title>InClassAssign2</title>
 
@@ -362,7 +363,7 @@ summary {
 
 
 <h1 class="title toc-ignore">InClassAssign2</h1>
-<h4 class="date">August 28</h4>
+<h4 class="date">August 28, 2020</h4>
 
 </div>
 
@@ -371,12 +372,12 @@ summary {
 <ol style="list-style-type: decimal">
 <li>Load the data into R and check the dimensions of the data. Also, obtain a summary of the data. How many observations are there? What is the range of years covered in this data set?</li>
 </ol>
-<pre class="r"><code>turnout &lt;- read.csv(&quot;/Users/elvirakalmurzaeva/Documents/GitHub/Quant_INTA/Quant_INTA/QUANT_INTA_FINAL/turnout.csv&quot;)
-class(turnout) </code></pre>
+<pre class="r"><code>turnout &lt;- read.csv(&quot;turnout.csv&quot;)
+class(turnout)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>dim (turnout) #There are 14 observations and nine variables in total.</code></pre>
 <pre><code>## [1] 14  9</code></pre>
-<pre class="r"><code>summary(turnout) #The range of years of elections covered in this data set are from 1980 to 2008, the difference is by 2 years.</code></pre>
+<pre class="r"><code>summary(turnout)</code></pre>
 <pre><code>##       year           VEP              VAP             total       
 ##  Min.   :1980   Min.   :159635   Min.   :164445   Min.   : 64991  
 ##  1st Qu.:1986   1st Qu.:171192   1st Qu.:178930   1st Qu.: 73179  
@@ -393,16 +394,13 @@ class(turnout) </code></pre>
 ##  3rd Qu.:73.75   3rd Qu.:3042   3rd Qu.:15910   3rd Qu.:2937   3rd Qu.:263  
 ##  Max.   :78.00   Max.   :3168   Max.   :19392   Max.   :4972   Max.   :263  
 ##                                                                NA&#39;s   :13</code></pre>
+<pre class="r"><code>#The range of years of elections covered in this data set are from 1980 to 2008, the difference is by 2 years.</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Calculate the turnout rate based on the voting age population or VAP. Note that for this data set, we must add the total number of eligible overseas voters since the VAP variable does not include these individuals in the count. Next, calculate the turnout rate using the voting eligible population or VEP. What difference do you observe?</li>
 </ol>
 <pre class="r"><code>VAPtr &lt;-turnout$total/ (turnout$VAP + turnout$overseas)*100
 names(VAPtr) &lt;-turnout$year
 VEPtr &lt;-turnout$total/ turnout$VEP *100
-names(VEPtr) &lt;-turnout$year
-diff &lt;- VEPtr - VAPtr
-names(diff) &lt;- turnout$year
-compare = VEPtr&gt; VAPtr
 #The difference shows that the VEP-based turnout is higher than VAP-based turnout for all indicated years.  </code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li>Compute the differences between the VAP and ANES estimates of turnout rate. How big is the difference on average? What is the range of the differences? Conduct the same comparison for the VEP and ANES estimates of voter turnout. Briefly comment on the results.</li>
@@ -439,16 +437,17 @@ diffbefore = turnout[1:7,&quot;ANES&quot;] -VEPtr[1:7]
 diffafter = turnout[8:14,&quot;ANES&quot;] -VEPtr[8:14]
 mean(diffbefore)-mean(diffafter)</code></pre>
 <pre><code>## [1] -1.965126</code></pre>
-<pre class="r"><code>#Overtime the difference of turnout has increased by about 2%.```
-
-#6. ANES does not interview prisoners and overseas voters. Calculate an adjustment
-#to the 2008 VAP turnout rate. Begin by subtracting the total number of ineligible
-#felons and noncitizens from the VAP to calculate an adjusted VAP. Next,
-#calculate an adjusted VAP turnout rate, taking care to subtract the number of
-#overseas ballots counted from the total ballots in 2008. Compare the adjusted
-#VAP turnout with the unadjusted VAP, VEP, and the ANES turnout rate. Briefly
-#discuss the results.
-#```{r}</code></pre>
+<pre class="r"><code>#Overtime the difference of turnout has increased by about 2%</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>ANES does not interview prisoners and overseas voters. Calculate an adjustment to the 2008 VAP turnout rate. Begin by subtracting the total number of ineligible felons and noncitizens from the VAP to calculate an adjusted VAP. Next, calculate an adjusted VAP turnout rate, taking care to subtract the number of overseas ballots counted from the total ballots in 2008. Compare the adjusted VAP turnout with the unadjusted VAP, VEP, and the ANES turnout rate. Briefly discuss the results.</li>
+</ol>
+<pre class="r"><code>VAPtradj&lt;-(turnout$total - turnout$overseas)/ (turnout$VAP + turnout$overseas -turnout$felons - turnout$noncit)*100
+turnout2008 &lt;- data.frame(VAPtradj,VAPtr, VEPtr,turnout$ANES)
+turnout2008&lt;- turnout2008[14,]
+turnout2008</code></pre>
+<pre><code>##      VAPtradj    VAPtr    VEPtr turnout.ANES
+## 2008 59.22544 55.67409 61.55433           78</code></pre>
+<p>#In 2008 ANES shows the highest turnout - 78%, which is higher than VEP turnout (the second highest turnout) for 16%. While VAP turnout shows 55.67%, which is minimum of all. Moreover, the adjusted VAP (excluding non-citizens, felons and people in overseas) shows 59.23%. These results show that ANES might probably skewed, since there is a great difference between other tunout results. It opens up an issue of whether or not ANES results represent the real situation and also proves an assumption of social desirability bias of respondents. This said, there is a need for cross checking the results of VAP, VEP and ANES turnouts.</p>
 
 
 
