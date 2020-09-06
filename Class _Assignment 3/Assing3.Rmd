@@ -45,7 +45,8 @@ lev <- levels(leaders$result2)
 lev
 leaders$outcome <- as.integer (leaders$result2)
 leaders$success <- ifelse(leaders$outcome %in% c(1,2,3,4),1,0)
-                        
+mean(leaders$success)                       
+#Overall leader assassinations attempts were successful for 21.6% It is too early to validate or disapprove the assumption of the the success of assassination attempts being randomly determined.
 ```
 
 3. Investigate whether the average polity score over three years prior to an assassination
@@ -55,7 +56,12 @@ successful and failed attempts. Briefly interpret the results in light of the va
 of the aforementioned assumption.
 
 ```{r}
-
+scoreSuccess <- mean(leaders[leaders$success == 1, "politybefore"])
+scoreFail <- mean(leaders[leaders$success == 0, "politybefore"])
+ageSuccess <- mean(leaders[leaders$success == 1, "age"])
+ageFail <- mean(leaders[leaders$success == 0, "age"])
+#The average difference in polity before between successful and failed attempts is one point, closer to democratic governance system. Which means that leaders of countries closer to democratic regimes are more likely to be killed. 
+#The average difference in age of leaders is around four years, which may mean that the leaders who are older is more likely to die. There are two assumptions why this may happen: 1) due to the age their health conditions may be worse and they were not able to recover after the assassination attempt and 2)they may serve longer in the office which means that they may be targeted several times more than those who are younger. The several assassination attempts also increases chance of leaders to die. 
 ```
 
 4. Repeat the same analysis as in the previous question, but this time using the
@@ -65,6 +71,10 @@ if a country is in either civil or international war during the three years prio
 an assassination attempt. Provide a brief interpretation of the result.
 
 ```{r}
+leaders$warbefore = ifelse((leaders$interwarbefore == 1 | leaders$civilwarbefore == 1), 1, 0)
+SuccessWar <- mean(leaders[leaders$success == 1, "warbefore"])
+FailWar <- mean(leaders[leaders$success == 0, "warbefore"])
+#The overall rate of wars prior the successful assassination attempt is 35%, while before the  failed attempt is 37%. There is no great difference between attempts, therefore, we may assume that having a war before assassination does not really affect the outcome of the assassination attempt. However, the comparison of war before the assassination to countries years when there were no any attempts may tell us whether failed domestic politics (i.e. state of war is a proof of failed domestic politics) led to the assassination of leaders or did not effect at all. 
 
 ```
 
@@ -73,6 +83,14 @@ leader assassination lead countries to war? When analyzing these data, be sure
 to state your assumptions and provide a brief interpretation of the results.
 
 ```{r}
-
+scoreSuccessAfter <- mean(leaders[leaders$success == 1, "polityafter"])
+scoreFailAfter <- mean(leaders[leaders$success == 0, "polityafter"])
+#The overall rate of regime type demonstrates that after successful assassination of leaders countries were closer to democratic spectrum (-0.76), in comparison to failed attempts (-1.9). We may assume that failed assassinations led to toughening internal politics and introducing harsh measures to prevent any threat to the existing regime. 
+leaders$warafter = ifelse((leaders$interwarafter == 1 | leaders$civilwarafter == 1), 1, 0)
+SuccessWarAfter <- mean(leaders[leaders$success == 1, "warafter"])
+FailWarAfter <- mean(leaders[leaders$success == 0, "warafter"])
+#Moreover, the overall rate of international and civil wars after assassination attempts differs based on the outcome of the assassinations. About 20% of countries with successful attempts went to war, while 29.6% of countries with failed attempts went to war after. 
+#We may assume that after failed attempts opposition or opposing leaders did not surrender and used violence causing civil war or international war. Failed assassination may lead them using another last resort. 
+#In general, the success of the assassination attempts depends on various factors such as health condition of the leader, how badly she/he was injured, the quality of medical care during that period, but factors such as prior war experience, the regime type, age have various interpretations. Thus, not having the former set of factors at hand it is hard to state to what extend the results of the attempt are random. 
 ```
 
