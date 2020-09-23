@@ -1,0 +1,146 @@
+---
+title: "Access to Information and Attitudes towards Intimate Partner Violence"
+output:
+  html_document: default
+  pdf_document: default
+  Name: Elvira Kalmurzaeva
+---
+
+In this exercise, we examine cross-national differences in attitudes towards domestic violence and access to information. We explore the hypothesis that there is an association at an aggregate level between the extent to which individuals in a country have access to knowledge and new information, both through formal schooling and through the mass media, and their likelihood of condemning acts of intimate partner violence.  This exercise is in part based on: 
+
+Pierotti, Rachel. (2013). "[Increasing Rejection of Intimate Partner Violence: Evidence of Global Cultural Diffusion](http://dx.doi.org/10.1177/0003122413480363)." *American Sociological Review*, 78: 240-265. 
+
+We use data from the Demographic and Health Surveys, which are a set of over 300 nationally, regionally and residentially representative surveys that have been fielded in developing countries around the world, beginning in 1992. The surveys employ a stratified two-stage cluster design. In the first stage enumeration areas (EA) are drawn from Census files. In the second stage within each EA a sample of households is drawn from an updated list of households. In addition, the surveys have identical questionnaires and trainings for interviewers, enabling the data from one country to be directly compared with data collected in other countries. It is important to note that different groups of countries are surveyed every year. 
+
+In the study, the author used these data to show that "women with greater access to global cultural scripts through urban living, secondary education, or access to media were more likely to reject intimate partner violence." The data set is in the csv file `dhs_ipv.csv`. The names and descriptions of variables are:
+
+-------------------------------------------------------------------------------
+Name             Description
+---------------- ---------------------------------------------------------
+`beat_goesout`   Percentage of women in each country that think a husband is justified to beat his wife if she goes                     out without telling him. 
+
+`beat_burnfood`  Percentage of women in each country that think a husband is justified to beat his wife if she burns                    his food.  
+
+`no_media`       Percentage of women in each country that rarely encounter a newspaper, radio, or television. 
+
+`sec_school`     Percentage of women in each country with secondary or higher education.
+
+`year`           Year of the survey
+
+`region`         Region of the world
+
+`country`        Country
+-------------------------------------------------------------------------------
+
+
+Note that there are two indicators of *attitudes towards domestic violence*: `beat_goesout` and `beat_burnfood`. There are also two indicators of *access to information*: `sec_school` and `no_media`. 
+
+## Question 1
+
+Let's begin by examining the association between attitudes towards intimate partner violence and the two exposure to information variables in our data. Load the `dhs_ipv.csv` data set. Use scatterplots to examine the bivariate relationship between `beat_goesout` and `no_media` as well as between `beat_goesout` and `sec_school`. Repeat these bivariate graphs between `beat_burnfood` and  `no_media`, as well as `beat_burnfood` and `sec_school`. Be sure to add informative axis labels. Briefly interpret these graphs in light of the hypothesis of the study.
+
+## Answer 1
+
+```{r}
+DomViolence <- read.csv("dhs_ipv.csv")
+dim(DomViolence)
+par(mfrow = c(2,2))
+plot(DomViolence$no_media, DomViolence$beat_goesout, pch = 16, col = "blue", 
+     xlab= "No media", ylab= "Beatings out for going out", main = "Beatings for going out vs no media access")
+plot(DomViolence$sec_school, DomViolence$beat_goesout, pch = 16, col = "blue", 
+     xlab= "Secondary school", ylab= "Beatings for going out", main = "Beatings for going out vs secondary education")
+plot (DomViolence$no_media, DomViolence$beat_burnfood, pch = 17, col= "black", 
+      xlab = "No media", ylab = "Beatings for burning food", main = "Beatings for burning food vs no media access")
+plot (DomViolence$sec_school, DomViolence$beat_burnfood, pch = 17, col = "black", 
+      xlab = "Secondary Education", ylab = "Beatings for burning food", main = "Beatings for burning food vs secondary education")
+```
+The first plot of the relation of the approval of violence and access to media shows that the higher is the lack of access to media is higher the approval of the violence. In general, the increase in percentage of women with no access to media goes together with increase of rate of approval. In the second plot we see that the more women are educated, less they approve the violence, however there are three outliers that show that there are three cases where despite having high percentage of educated women  there is still approval of violence. 
+The next two plots are very similar to previous two. The higher is the lack of access to media the higher is percentage of women who approve beating over burned food, also there is one outlier with 15% of women without access to media about 60% of women approve violence. This might be a country with specific context that is radically discriminatory towards women. The last plot also shows that the more women are educated less they approve violence. However, there are three outliers - three countries indicating that despite of high level of education around 70% there are cases when in one country ~ 10%, in the second ~ 23%, and in the third ~ 28% approve violence.These plots prove the given hypothesis. 
+## Question 2
+
+Compute the correlation coefficient between `beat_burnfood` and media exposure, as well as between `beat_burnfood` and education. Remember to use complete observations. What do these measures tell us about the association between education and media exposure with attitudes towards intimate partner violence?
+
+## Answer 2
+
+```{r}
+burnfood_media<- cor(DomViolence$beat_burnfood, DomViolence$no_media, use = "pairwise")
+burnfood_school<- cor (DomViolence$beat_burnfood, DomViolence$sec_school, use = "pairwise")
+```
+The correlation between beating for burning food and no access to media is almost 0.60, while the correlation between beating for burning food and secondary education is almost -0.50. This shows that there is a positive correlation between the cases of domestic violence with women no access to media, which means that the more women do not have access to media the higher is their approval of the domestic violence. Moreover, the correlation between education and violence demonstrates that the less is the percentage of educated women the higher is the approval of violence among women. 
+
+
+## Question 3
+
+We proceed to explore the national-level differences in attitudes towards domestic violence. First, use boxplots to compare the variation in the percentage of `beat_burnfood` between different regions of the world using `region`. What are the main differences across regions in terms of the median and dispersion of the distribution?  Second, using boxplots examine the distribution of `no_media` and `sec_school` by region of the world. Comment on the main differences of the distribution of these variables across regions. 
+
+## Answer 3
+
+```{r}
+boxplot(DomViolence$beat_burnfood~ DomViolence$region)
+boxplot(DomViolence$no_media~ DomViolence$region)
+boxplot(DomViolence$sec_school~ DomViolence$region)
+
+```
+For Sub-Saharan African region in 25% of countries the level of approval of violence does not exceed ~12%, the average approval rate is ~21%, while median approval rate is ~19%, for 75% of countries the approval rate does not exceed ~26%. The IQR is ~14%.For Latin American region the median is ~3%, while IQR is ~4%. For Asian region the median is ~3%, IQR is ~9%, while for Middle East and Central Asia the median is ~7%, IQR is ~9%. 
+Asia and Latin America regions demonstrate that the median of approval rate is significantly lower in comparison to Sub-Saharan Africa, the latter has the highest median approval rate. The difference in IQR demonstrates the the Latin America regions is mostly homogeneous and approval rate is lower in comparison to others. For instance, the Asian region with lower median rate, however the IQR shows that the cases are more volatile, there is a greater variation in violence approval rate.Sub-Saharan Africa has the greatest IQR, it is the most volatile region with strong variation, which proves that the approval rate of violence is the highest among all the given regions. The Latin America is the safest region for women in terms of domestic violence.    
+The median of no media access in Middle East and Central Asian region is ~5%, while IQR is ~4%, while the median in Asia is ~ 30%, IQR is ~23%, in Latin America median is ~11%, IQR is 8.5%, while in Sub-Saharan Africa median is ~ 39%, IQR is ~20%. 
+Among all regions the Sub-Saharan Africa has the highest median of lack of access to media, while in Asia the median is the lowest. With the lowest IQR it also shows that Asia is more homogeneous while Middle East and Sub-Saharan Africa are the most volatile regions with large variations. 
+The median of educated women in Sub-Saharan Africa is 12.5%, IQR is ~15%, in Asia the median is ~27%, IQR is ~13%, Latin America's median is ~30%, IQR - ~13%, and in Middle East and Central Asia the median is ~ 43%, IQR is ~19%. 
+In Middle East and Central Asia the median of educated women are the highest among the given regions, the Latin America goes next however, the volatility in the Middle East is higher for 5% than in Latin America. The Sub-Saharan Africa has the lowest median of educated women and 15% of volatility. 
+
+## Question 4
+
+An important point of the researcher's hypothesis is that the support towards intimate partner violence should *decrease* over time, as more women across regions have access to formal schooling and exposure to mass media. To test this idea, using time-series plots, examine the trends in `beat_burnfood` from 1999-2014 *within each region*. Thinking about the study design, what should we consider before trusting that this plot shows a change over time in attitudes?  
+
+## Answer 4
+
+```{r}
+library(dplyr)
+
+latin <- subset(DomViolence, subset = (region == "Latin America"))
+africa <- subset(DomViolence, subset = (region == "Sub-Saharan Africa"))
+asia <- subset(DomViolence, subset = (region == "Asia"))
+middle <- subset(DomViolence, subset = (region == "Middle East and Central Asia"))
+
+par(mfrow = c(2,2))
+
+beat.latin <- tapply(latin$beat_burnfood, latin$year, median)
+beat.latin <- data.frame(beat.latin)
+beat.latin <- tibble::rownames_to_column(beat.latin)
+names(beat.latin) <- c("year", "beat_burnfood")
+plot(beat.latin$year[!is.na(beat.latin$beat_burnfood)],
+     beat.latin$beat_burnfood[!is.na(beat.latin$beat_burnfood)],type="l",
+     xlab = "year", ylab = "Beatings for burnt food", main = "Latin")
+
+beat.africa <- tapply(africa$beat_burnfood, africa$year, median)
+beat.africa <- data.frame(beat.africa)
+beat.africa <- tibble::rownames_to_column(beat.africa)
+names(beat.africa) <- c("year", "beat_burnfood")
+plot(beat.africa$year[!is.na(beat.africa$beat_burnfood)],
+     beat.africa$beat_burnfood[!is.na(beat.africa$beat_burnfood)],type="l",
+     xlab = "year", ylab = "Beatings for burnt food", main = "Africa")
+
+beat.asia <- tapply(asia$beat_burnfood, asia$year, median)
+beat.asia <- data.frame(beat.asia)
+beat.asia <- tibble::rownames_to_column(beat.asia)
+names(beat.asia) <- c("year", "beat_burnfood")
+plot(beat.asia$year[!is.na(beat.asia$beat_burnfood)],
+     beat.asia$beat_burnfood[!is.na(beat.asia$beat_burnfood)],type="l",
+     xlab = "year", ylab = "Beatings for burnt food", main = "Asia")
+
+beat.middle <- tapply(middle$beat_burnfood, middle$year, median)
+beat.middle <- data.frame(beat.middle)
+beat.middle <- tibble::rownames_to_column(beat.middle)
+names(beat.middle) <- c("year", "beat_burnfood")
+plot(beat.middle$year[!is.na(beat.middle$beat_burnfood)],
+     beat.middle$beat_burnfood[!is.na(beat.middle$beat_burnfood)],type="l",
+     xlab = "year", ylab = "Beatings for burnt food", main = "Middle East and Central Asia")
+
+
+```
+Overall, the support towards intimate partner violence is decreasing over time in all the regions, except Asia.  
+In Latin America the rate of support was already low in comparison to other regions and over time, despite the sporadic increases there is a decrease in support. The sporadic increases may be influenced by the contextual changes in the country, such as a economic crises and women were not able to leave their partners due to their dependency and were forced to approve the violence towards them. 
+In Africa the peak of support was in 2002 and remained high until 2008, which is the lowest in the region. Starting from 2010 there is a slight increase, but this is still lower in comparison to the remaining years. 
+In Asia the overall the rate of support of violence was low, until 2008, where there was a sudden leap. This rate also went down by 2010 to the lowest point, however, the mean of the last increases and decreases is visually still higher. That's why for Asian region the hypothesis do not work.   
+As for Middle East and Central Asia the starting point is really high and we observe a sudden decrease in 2004, from that period there was not radical increases. Visually it is was more or less stable and is going down over time. 
+
