@@ -95,46 +95,27 @@ An important point of the researcher's hypothesis is that the support towards in
 ## Answer 4
 
 ```{r}
-library(dplyr)
-
-latin <- subset(DomViolence, subset = (region == "Latin America"))
-africa <- subset(DomViolence, subset = (region == "Sub-Saharan Africa"))
-asia <- subset(DomViolence, subset = (region == "Asia"))
-middle <- subset(DomViolence, subset = (region == "Middle East and Central Asia"))
-
-par(mfrow = c(2,2))
-
-beat.latin <- tapply(latin$beat_burnfood, latin$year, median)
-beat.latin <- data.frame(beat.latin)
-beat.latin <- tibble::rownames_to_column(beat.latin)
-names(beat.latin) <- c("year", "beat_burnfood")
-plot(beat.latin$year[!is.na(beat.latin$beat_burnfood)],
-     beat.latin$beat_burnfood[!is.na(beat.latin$beat_burnfood)],type="l",
-     xlab = "year", ylab = "Beatings for burnt food", main = "Latin")
-
-beat.africa <- tapply(africa$beat_burnfood, africa$year, median)
-beat.africa <- data.frame(beat.africa)
-beat.africa <- tibble::rownames_to_column(beat.africa)
-names(beat.africa) <- c("year", "beat_burnfood")
-plot(beat.africa$year[!is.na(beat.africa$beat_burnfood)],
-     beat.africa$beat_burnfood[!is.na(beat.africa$beat_burnfood)],type="l",
-     xlab = "year", ylab = "Beatings for burnt food", main = "Africa")
-
-beat.asia <- tapply(asia$beat_burnfood, asia$year, median)
-beat.asia <- data.frame(beat.asia)
-beat.asia <- tibble::rownames_to_column(beat.asia)
-names(beat.asia) <- c("year", "beat_burnfood")
-plot(beat.asia$year[!is.na(beat.asia$beat_burnfood)],
-     beat.asia$beat_burnfood[!is.na(beat.asia$beat_burnfood)],type="l",
-     xlab = "year", ylab = "Beatings for burnt food", main = "Asia")
-
-beat.middle <- tapply(middle$beat_burnfood, middle$year, median)
-beat.middle <- data.frame(beat.middle)
-beat.middle <- tibble::rownames_to_column(beat.middle)
-names(beat.middle) <- c("year", "beat_burnfood")
-plot(beat.middle$year[!is.na(beat.middle$beat_burnfood)],
-     beat.middle$beat_burnfood[!is.na(beat.middle$beat_burnfood)],type="l",
-     xlab = "year", ylab = "Beatings for burnt food", main = "Middle East and Central Asia")
+asia <- subset(DomViolence, region == "Asia")
+latin <- subset(DomViolence, region == "Latin America")
+africa <- subset(DomViolence, region == "Sub-Saharan Africa")
+me <- subset(DomViolence, region == "Middle East and Central Asia")
+asia_dvtrend <- tapply(asia$beat_burnfood, asia$year, mean, na.rm = TRUE)
+latin_dvtrend <- tapply(latin$beat_burnfood, latin$year, mean, na.rm = TRUE)
+af_dvtrend <- tapply(africa$beat_burnfood, africa$year, mean, na.rm = TRUE)
+me_dvtrend <- tapply(me$beat_burnfood, me$year, mean, na.rm = TRUE)
+plot(names(latin_dvtrend), latin_dvtrend, type = "l", col = "blue",
+ylab = "% Support for domestic violence", xlab = "Survey Year",
+main = "Attitudes towards Domestic Violence in Latin America, 1999-2014")
+plot(names(me_dvtrend), me_dvtrend, type = "l", col = "red", ylab = "% Support for domestic violence", xlab = "Survey Year",
+main = "Attitudes towards Domestic Violence in Middle East and Central Asia, 1999-2014")
+plot(names(asia_dvtrend), asia_dvtrend, type = "l", col = "purple", ylab = "% Support for domestic violence", xlab = "Survey Year",
+main = "Attitudes towards Domestic Violence in Asia, 1999-2014")
+plot(names(af_dvtrend), af_dvtrend, type = "l", col = "magenta", ylab = "% Support for domestic violence", xlab = "Survey Year",
+main = "Attitudes towards Domestic Violence in Africa, 1999-2014")
+#text(2002, 62, labels = "Middle East", col = "blue")
+#text(2005, 30, labels = "Africa", col = "green")
+#text(2009, 30, labels = "Asia", col = "purple")
+#text(2003, 10, labels = "Latin America", col = "red")
 
 
 ```
