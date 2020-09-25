@@ -1,0 +1,156 @@
+---
+title: "Poverty and Economic Decision-Making"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+Do changes in one's financial circumstances affect one's decision-making process and cognitive capacity? In an experimental study, researchers randomly selected a group of US respondents to be surveyed before their payday and another group to be surveyed after their payday. Under this design, the respondents of the `Before Payday` group are more likely to be financially strained than those of the `After Payday` group.  The researchers were interested in investigating whether or not changes in people's financial circumstances affect their decision making and cognitive performance.  Other researchers have found that scarcity induce an additional mental load that impedes cognitive capacity.  This exercise is based on:
+
+Carvalho, Leandro S., Meier, Stephen, and Wang, Stephanie W. (2016). "[Poverty and economic decision-making: Evidence from changes in financial resources at payday.](http://dx.doi.org/10.1257/aer.20140481)" *American Economic Review*, Vol. 106, No. 2, pp. 260-284. 
+
+In this study, the researchers administered a number of decision-making and cognitive performance tasks to the `Before Payday` and `After Payday` groups. We focus on the *numerical stroop task*, which measures cognitive control.  In general, taking more time to complete this task indicates less cognitive control and reduced cognitive ability. They also measured the amount of cash the respondents have, the amount in their checking and saving accounts, and the amount of money spent.  The data set is in the CSV file `poverty.csv`. The names and descriptions of variables are given below:
+
+-------------------------------------------------------------------------------
+ Name                         Description
+ ---------------------------- ---------------------------------------------------------
+  `treatment`                 Treatment conditions: `Before Payday` and `After Payday`
+  
+  `cash`                      Amount of cash respondent has on hand
+  
+  `accts_amt`                 Amount in checking and saving accounts
+  
+  `stroop_time`               Log-transformed average response time for cognitive 
+                              stroop test
+  
+  `income_less20k`            Binary variable: `1` if respondent earns less than 20k a 
+                              year and `0` otherwise
+-------------------------------------------------------------------------------
+ 
+## Question 1
+
+Load the `poverty.csv` data set. Look at a summary of the `poverty` data set to get a sense of what its variables looks like. Use histograms to examine the univariate distributions of the two financial resources measures: `cash` and `accts_amt`. What can we tell about these variables' distributions from looking at the histograms? Evaluate what the shape of these distributions could imply for the authors' experimental design.
+ 
+Now, take the *natural logarithm* of these two variables and plot the histograms of these tranformed variables. How does the distribution look now? What are the advantages and disadvantages of transforming the data in this way? 
+
+**NOTE:** Since the natural logarithm of 0 is undefined, researchers often add a small value (in this case, we will use \$1 so that $\log 1 = 0$) to the 0 values for the variables being transformed (in this case, `cash` and `accts_amt`) in order to successfully apply the `log()` function to all values. Be sure to do this recoding only for the purposes of taking the logarithmic transformation -- keep the original variables the same. 
+
+## Answer 1
+
+```{r}
+poverty<- read.csv("poverty-1.csv")
+summary(poverty)
+par(mfrow = c(1,2))
+hist(poverty$cash, freq = FALSE, xlab ="cash", main = "Distribution by cash")
+hist(poverty$accts_amt, freq = FALSE, xlab = "Accounts", main = "Distribution by Accts_amt")
+
+```
+Looking at the summary one can tell that there are outliers, since there is a great difference between mean and median. But histograms show that the most of the data is concentrated closer to zero, which means that the distribution of cash and amounts saved in the accounts are extremely low. 
+
+```{r}
+poverty$cash_log <- poverty$cash
+poverty$cash_log[poverty$cash_log == 0]<-1
+poverty$cash_log <- log(poverty$cash_log)
+poverty$acc_log <- poverty$accts_amt
+poverty$acc_log[poverty$acc_log == 0]<-1
+poverty$acc_log <- log(poverty$acc_log)
+
+par(mfrow = c(1,2))
+hist (log(poverty$cash, base = exp(1)), freq = FALSE, xlab = "cash", main =  "Distribution by cash")
+hist (log(poverty$accts_amt, base = exp(1)), freq = FALSE, xlab = "account", main =  "Distribution by accounts")
+
+```
+The distributions in the second histograms are more visible, since the variances are now closer to zero. The advantage of this version is that one can clearly see how density is changing, however, we can't see the whole range, especially the outliers closer to the maximum. This discrepancy would also tell us how great is the gap.
+
+
+## Question 2
+
+Now, let's examine the primary outcome of interest for this study-- the effect of a change in financial situation (in this case, getting paid on payday) on economic decision-making and cognitive performance. Begin by calculating the treatment effect for the `stroop_time` variable (a log-transformed variable of the average response time for the stroop cognitive test), using first the mean and then the median. What does this tell you about differences in the outcome across the two experimental conditions? 
+
+Secondly, let's look at the relationship between finanical circumstances and the cognitive test variable. Produce two scatter plots side by side (hint: use the par(mfrow)) before your plot commands to place graphs side-by-side), one for each of the two experimental conditions, showing the bivariate relationship between your *log-transformed* `cash` variable and the amount of time it took subjects to complete the stroop cognitive test administered in the survey (`stroop_time`). Place the `stroop_time` variable  on the y-axis. Be sure to title your graphs to differentiate between the `Before Payday` and `After Payday` conditions. Now do the same, for the *log-transformed* `accts_amt` variable. 
+
+Briefly comment on your results in light of the hypothesis that changes in economic circumstances will influence cognitive performance. 
+
+## Answer 2
+
+```{r}
+tapply(poverty$stroop_time, poverty$treatment, mean) - mean(poverty$stroop_time[poverty$treatment == "Before Payday"])
+tapply(poverty$stroop_time, poverty$treatment, median) - median(poverty$stroop_time[poverty$treatment == "Before Payday"])
+
+```{r}
+poverty_before<- subset(poverty, subset = (treatment == "Before Payday"))
+poverty_after<- subset(poverty, subset = (treatment == "After Payday"))
+
+par(mfrow = c(1,2))
+plot(poverty_before$cash_log, poverty_before$stroop_time, main = "Before Payday", xlab = "Log cash", ylab = "Log response time")
+plot(poverty_after$cash_log, poverty_after$stroop_time, main = "After Payday", xlab = "Log cash", ylab = "Log response time")
+
+```
+The median treatment effect is 0.014 and the mean treatment effect is 0.011. Since there is increase in stroop time, it means that after getting paid people need more time to make decisions, in other words their cognitive ability decreases when they have money. 
+The plots do not show strong pattern for both of variables, hence graphical analysis does not confirm analysis as of now. Probably we need some transformations and removing outliers to get reliable resuls
+
+## Question 3
+
+Now, let's take a closer look at whether or not the `Before Payday` versus `After Payday` treatment  created measurable differences in financial circumstances. What is the effect of payday on participants' financial resources? To  help with interpretability, use the original variables `cash` and `accts_amt` to calculate this effect. Calculate both the mean and median effect. Does the measure of central tendency you use affect your perception of the effect?
+
+## Answer 3
+
+```{r}
+mean_cash_diff<- mean(poverty_after$cash, na.rm = TRUE) - mean(poverty_before$cash, na.rm = TRUE)
+median_cash_diff <- median(poverty_after$cash, na.rm = TRUE) - median(poverty_before$cash, na.rm = TRUE)
+mean_accts_diff <- mean(poverty_after$accts_amt, na.rm = TRUE) - mean(poverty_before$accts_amt, na.rm = TRUE)
+median_accts_diff<- median(poverty_after$accts_amt, na.rm = TRUE) - median(poverty_before$accts_amt, na.rm = TRUE)
+
+
+```
+Hence, the mean effects for cash and accts_amt are: mean_cash_diff = 36.78  and mean_accts_diff = -251.9
+The median effcets are:  median_cash_diff = 10 and median_accts_diff = 450
+The measure of central tendency we use definetely affects out perception. If we use mean,
+then the observed effect for cash is 3.6 times the median effect; for accts_amt it is even more dramatic - the mean effect is of different signs and almost two times lesser by absolute value.
+
+
+```{r}
+
+```
+
+
+## Question 4
+
+Compare the distributions of the `Before Payday` and `After Payday` groups for the *log-transformed* `cash` and `accts_amt` variables. Use quantile-quantile plots to do this comparison, and add a 45-degree line in a color of your choice (not black). Briefly interpret your results and their implications for the authors' argument that their study generated variation in financial resources before and after payday. When appropriate, state which ranges of the outcome variables you would focus on when comparing decision-making and cognitive capacity across these two treatment conditions. 
+
+## Answer 4
+
+```{r}
+par(mfrow = c(2,2))
+qqnorm(poverty_after$cash_log, pch = 1, frame = FALSE, main = "Log-cash after")
+qqline(poverty_after$cash_log, col = "steelblue", lwd = 2)
+qqnorm(poverty_before$cash_log, pch = 1, frame = FALSE, main = "Log-cash before")
+qqline(poverty_before$cash_log, col = "steelblue", lwd = 2)
+
+qqnorm(poverty_after$acc_log, pch = 1, frame = FALSE, main = "Log-accts after")
+qqline(poverty_after$acc_log, col = "red", lwd = 2)
+qqnorm(poverty_before$acc_log, pch = 1, frame = FALSE, main = "Log-accts before")
+qqline(poverty_before$acc_log, col = "red", lwd = 2)
+
+```
+For the log-transformed cash we see that both QQ plots don't seem to differ significantly for before and after payday periods. However, a closer look at the right tail shows that the after payday cash distributions seems to slightly depart from theoretical line, which means there is a bit of more uncertainty and skew in cash amounts. Hence, this might support the author's hypothesis that treatment creates some changes for the upper quantiles of cash variable. Hence I would take a deeper look at behavior of higher cash values' distribution
+For the log-transform accounts' amounts we see that lower quantiles of accts_amt seem to increase their spread after the payday. The lower left part of QQ plots show that log-accts after payday depart further from the theretical line than log-accts before payday. It may suggest that treatment makes some influence on the variation of log-accts from the lower quantiles, thus supporting author's hypothesis.
+
+
+```{r}
+
+```
+
+
+
+## Question 5 
+
+In class, we covered the difference-in-difference design for comparing average treatment effects across treatment and control groups. This design can also be used to compare average treatment effects across different ranges of a *pre-treatment variable*- a variable that asks about people's circumstances before the treatment and thus could not be affected by the treatment. This is known as *heterogeneous treatment effects* -- the idea that the treatment may have differential effects for different subpopulations. Let's look at the pre-treatment variable `income_less20k`. Calculate the treatment effect of Payday on amount in checking and savings accounts separately for respondents earning more than 20,000 dollars a year and those earning less than 20,000 dollars. Use the original `accts_amt` variable for this calculation. Then take the difference between the effects you calculate. What does this comparison tell you about how payday affects the amount that people have in their accounts? Are you convinced by the authors' main finding from Question 2 in light of your investigation of their success in manipulating cash and account balances before and after payday?
+
+## Answer 5 
+
+```{r}
+
+
+```
+
