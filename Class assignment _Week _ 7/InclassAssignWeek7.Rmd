@@ -236,18 +236,18 @@ polpres$DaystoElections08 <- as.Date("2008-11-04") - as.Date (polpres$middate)
 Obama.pols <- rep (NA, 90)
 state_names <- unique(polpres$state)
 for (i in 1:90) {
-  counter = 0
-   latest <- polpres$DaysToElection08 == min(polpres$DaysToElection08)
-  dframe <- subset(polpres, subset =(DaystoElections08 == latest))
+  counter <- 0
+  near.data <- subset(polpres, subset = (DaystoElections08 >= i))
   for (j in 1:51) {
-    if(mean(dframe$margin) > 0) {
-      counter = mean(dframe$EV) 
-    } else {next}
-    
+    state_data <- subset(near.data, subset =(state== state_names[j]))
+    state_data <- subset(state_data, subset =(DaystoElections08== min(state_data$DaystoElections08) ) )
+    if(mean(state_data$margin) > 0) {
+      counter = counter + mean(state_data$EV) 
   }
-  Obama.pols[i] <- counter
-  
+  }
+  Obama.pols[i] = counter
 }
+  
 ```
 
 
