@@ -108,25 +108,33 @@ intrade08 <- read.csv("intrade08.csv")
 pres08<- read.csv("pres08.csv")
 elections08 <- merge(pres08, intrade08, by ="state")
 summary(elections08)
-class(elections08$day)
-DaystoElections08 <- as.Date ("2008-11-04") - as.Date (elections08$day)
-range(DaystoElections08)
-n <- length(elections08$day)
-Obama.pred <- McCain.pred <- rep(NA, length(n))
-for (i in 1:n) {
-  market_price2008 <- subset(elections08, subset = ((DaystoElections08 <= ( n -i)) & (DaystoElections08 > (n - i))))
-}
-Obama.pred [i] <- mean(elections08$PriceD)
-McCain.pred [i] <- mean(elections08$PriceR)
+DaystoElections08 <- as.Date ("2008-11-04") - as.Date (elections08$day) 
+elections08$win_Obama <- ifelse(elections08$PriceD> elections08$PriceR, 1, 0) 
+elections08$actual_Obama <- ifelse(elections08$Obama> elections08$McCain, 1, 0) 
+elections08$error <- elections08$actual_Obama - elections08$win_Obama
+elections08_dbefore <- subset(elections08, subset = (day== "2008-11-03"))
+elections08_dbefore[elections08_dbefore$error != 0, ]
 
 ```
-
+Missouri and Indiana were missclassified in 2008. Missouri was a false positively misclassiffied, while Indiana is false negatively. 
 
 
 ```{r}
+intrade12 <- read.csv("intrade12.csv")
+pres12<- read.csv("pres12.csv")
+elections12 <- merge(pres12, intrade12, by ="state")
+summary(elections12)
+DaystoElections12 <- as.Date ("2012-11-06") - as.Date (elections12$day) 
+elections12$win_Obama <- ifelse(elections12$PriceD> elections12$PriceR, 1, 0) 
+elections12$actual_Obama <- ifelse(elections12$Obama > elections12$Romney, 1, 0)
+elections12$win_Obama <- ifelse(is.na(elections12$win_Obama), elections12$actual_Obama, elections12$win_Obama)
+elections12$error <- elections12$actual_Obama - elections12$win_Obama
+elections12_dbefore <- subset(elections12, subset = (day== "2012-11-05"))
+elections12_dbefore[elections12_dbefore$error != 0, ]
+
 
 ```
-
+Florida was false negatively misclassified in 2012
 
 ## Question 2
 
@@ -142,9 +150,28 @@ How do the predictions based on the betting markets change over
 ## Answer 2
 
 ```{r}
+DaystoElections08 <- as.Date("2008-11-04") -90
+elections08$win_Obama <- ifelse(elections08$PriceD> elections08$PriceR, 1, 0) 
+Obama.dailypredEV08 <- rep(NA, 90)
+for (i in 1:90) {
+  daily.data <- subset(elections08, subset = (as.Date(elections08$day) == DaystoElections08 + i))
+  Obama.dailypredEV08[i] <-sum(daily.data$EV[daily.data$win_Obama > 0])
+}
   
+plot(1:90, Obama.dailypredEV08, type = "b", 
+     main = "Daily Predicted Obama Electoral Votes",
+     xlab = "Days to Election", ylab = "Predicted Electoral Votes")
+points(90, 365, pch =19, col = "blue")
+abline(v =90)
+abline(h= 365, lty = "dashed")
+text (80, 370, "Actual Result")
+
+
+
+
+
 ```
-  
+  Closer to the Election Day the predicted electoral votes were accurately showing that Obama will win. 
 
 ## Question 3
 
@@ -162,9 +189,29 @@ Repeat the previous exercise but this time use the seven-day
 ## Answer 3
 
 ```{r}
+elections08 <- merge(pres08, intrade08, by ="state")
+DaystoElections08 <- as.Date("2008-11-04") -90
+window <- 7
+obama_votes <- c()
+for(i in 1:90)
+{
+  dframe <- subset(elections08, subset = ((as.Date(day) > DaystoElections08 + i - window) &
+                                            (as.Date(day) <= DaystoElections08 + i)))
+  m_priceD <- tapply(dframe$PriceD, dframe$state, mean)
+  m_priceR <- tapply(dframe$PriceR, dframe$state, mean)
+  all_states <- data.frame(m_priceD, m_priceR)
+  obama_states <- rownames(subset(all_states, subset = (m_priceD > m_priceR)))
+  dframe <- subset(dframe, subset = (day == DaystoElections08 + i))
+  obama_votes[i] <- sum(dframe[dframe$state %in% obama_states, 'EV'])
+}
 
+plot(90:1, obama_votes, type = "b", xlim = c(90, 0), col = "blue",
+     main = "7-day moving average for Obama", xlab = "Days to election", ylab = "Number of votes")
+points(0, 365, pch = 23, col = "red")
+abline(v = 0)
+text(13, 345, "Obama's actual vote")
 ```
-
+ The weekly moving average provides more reliable information forecasting Obama to win. 
 
 ## Question 4
 
@@ -182,7 +229,25 @@ Create a similar plot for 2008 state-wide poll predictions using
 ## Answer 4
 
 ```{r}
-
+polls08 <- read.csv("polls08.csv")
+polpres <- merge(polls08, pres08, by ="state")
+polpres$margin <- polpres$Obama.x - polpres$McCain.x
+polpres$DaystoElections08 <- as.Date("2008-11-04") - as.Date (polpres$middate) 
+Obama.pols <- rep (NA, 90)
+state_names <- unique(polpres$state)
+for (i in 1:90) {
+  counter = 0
+   latest <- polpres$DaysToElection08 == min(polpres$DaysToElection08)
+  dframe <- subset(polpres, subset =(DaystoElections08 == latest))
+  for (j in 1:51) {
+    if(mean(dframe$margin) > 0) {
+      counter = mean(dframe$EV) 
+    } else {next}
+    
+  }
+  Obama.pols[i] <- counter
+  
+}
 ```
 
 
