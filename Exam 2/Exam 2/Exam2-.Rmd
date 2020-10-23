@@ -1,10 +1,11 @@
 ---
 title: "Predicting Elections with Linear Models"
 output:
-  html_document:
-    df_print: paged
+  word_document: default
   Word_document: default
   pdf_document: default
+  html_document:
+    df_print: paged
 Name: Elvira Kalmurzaeva
 ---
 
